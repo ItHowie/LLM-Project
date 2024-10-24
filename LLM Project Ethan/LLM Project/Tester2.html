@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>State and City Selector</title>
+    <script type="module" src="register.js" defer></script>
+    <style>
+        /* Simple styles for better visibility */
+        #locationDisplay {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+        #midpointLocation {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>User Database</h1>
+
+    <!-- Starter Location Input -->
+    <label>Starting City: </label>
+    <input type="text" placeholder="Los Angeles" id="StartingCity">
+    
+    <label>Starting State: </label>
+    <input type="text" placeholder="California" id="StartingState"><br><br>
+
+    <!-- Destination Location Input -->
+    <label>Destination City: </label>
+    <input type="text" placeholder="New York City" id="DestinationCity">
+
+    <label>Destination State: </label>
+    <input type="text" placeholder="New York" id="DestinationState"><br><br>
+
+    <!-- Option to Add Midpoint -->
+    <input type="checkbox" id="midpointCheckbox"> Add Midpoint Location<br><br>
+
+    <!-- Midpoint Location Input (hidden initially) -->
+    <div id="midpointLocation">
+        <label>Midpoint City: </label>
+        <input type="text" placeholder="Chicago" id="MidpointCity">
+
+        <label>Midpoint State: </label>
+        <input type="text" placeholder="Illinois" id="MidpointState"><br><br>
+    </div>
+
+    <button type="submit" id="submit">Submit</button>
+
+    <!-- Section to display submitted location -->
+    <div id="locationDisplay">
+        <h2>Submitted Locations:</h2>
+        <p id="startingLocationText"></p> <!-- To display starter location -->
+        <p id="destinationLocationText"></p> <!-- To display destination location -->
+        <p id="midpointLocationText"></p> <!-- To display midpoint location if provided -->
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-analytics.js";
+        import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBFizCTjrxUhXX7dir_hcSsGfqBqJL-vXQ",
+            authDomain: "llm-project-be870.firebaseapp.com",
+            databaseURL: "https://llm-project-be870-default-rtdb.firebaseio.com",
+            projectId: "llm-project-be870",
+            storageBucket: "llm-project-be870.appspot.com",
+            messagingSenderId: "198283759188",
+            appId: "1:198283759188:web:065b9c788c3dc35fc3a7c1",
+            measurementId: "G-CTN0PW1EK6"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const db = getDatabase();
+
+        let startingCity = document.getElementById('StartingCity');
+        let startingState = document.getElementById('StartingState');
+        let destinationCity = document.getElementById('DestinationCity');
+        let destinationState = document.getElementById('DestinationState');
+        let midpointCity = document.getElementById('MidpointCity');
+        let midpointState = document.getElementById('MidpointState');
+        let submit = document.getElementById("submit");
+        let midpointCheckbox = document.getElementById("midpointCheckbox");
+        let midpointLocation = document.getElementById("midpointLocation");
+
+        let startingLocationText = document.getElementById("startingLocationText");
+        let destinationLocationText = document.getElementById("destinationLocationText");
+        let midpointLocationText = document.getElementById("midpointLocationText");
+
+        // Track if starting location is displayed
+        let startingLocationDisplayed = false;
+
+        // Show or hide midpoint location input based on the checkbox
+        midpointCheckbox.addEventListener('change', function () {
+            if (this.checked) {
+                midpointLocation.style.display = "block";
+            } else {
+                midpointLocation.style.display = "none";
+                midpointState.value = "";
+                midpointCity.value = "";
+            }
+        });
+
+        // Function to add data to Firebase and display on the webpage
+        function AddData() {
+            let destinationStateValue = destinationState.value.trim();
+            let destinationCityValue = destinationCity.value.trim();
+            let midpointStateValue = midpointState.value.trim();
+            let midpointCityValue = midpointCity.value.trim();
+            let startingStateValue = startingState.value.trim();
+            let startingCityValue = startingCity.value.trim();
+
+            if (startingStateValue === "" || startingCityValue === "" || destinationStateValue === "" || destinationCityValue === "") {
+                alert("Please fill in all required fields.");
+                return;
+            }
+
+            // Firebase Realtime Database logic
+            let locationId = Date.now(); // Unique ID based on timestamp
+            set(ref(db, 'Locations/' + 'Location_' + locationId), {
+                StartingState: startingStateValue,
+                StartingCity: startingCityValue,
+                DestinationState: destinationStateValue,
+                DestinationCity: destinationCityValue,
+                MidpointState: midpointStateValue || null, // Only add if provided
+                MidpointCity: midpointCityValue || null
+            }).then(() => {
+                alert("Data Added Successfully");
+
+                // Display the starting location
+                startingLocationText.innerHTML = "Starter Location: " + startingCityValue + ", " + startingStateValue;
+
+                // Display the submitted destination location on the page
+                destinationLocationText.innerHTML = "Destination Location: " + destinationCityValue + ", " + destinationStateValue;
+
+                if (midpointCheckbox.checked) {
+                    midpointLocationText.innerHTML = "Midpoint Location: " + midpointCityValue + ", " + midpointStateValue;
+                } else {
+                    midpointLocationText.innerHTML = ""; // Clear midpoint display if not provided
+                }
+
+                // Reset form fields
+                startingState.value = "";
+                startingCity.value = "";
+                destinationState.value = "";
+                destinationCity.value = "";
+                midpointState.value = "";
+                midpointCity.value = "";
+                midpointCheckbox.checked = false;
+                midpointLocation.style.display = "none"; // Hide midpoint fields after submission
+
+            }).catch((error) => {
+                alert("Unsuccessful");
+                console.log(error);
+            });
+        }
+
+        // Event listener to trigger data submission
+        submit.addEventListener('click', AddData);
+    </script>
+</body>
+
+</html>
+

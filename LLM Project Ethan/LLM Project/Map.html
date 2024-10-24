@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<!--https://www.youtube.com/watch?v=7hB2ASYBkXo-->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>State and City Selector</title>
+    <script type="module" src="register.js" defer></script>
+</head>
+
+<body>
+    <h1>User database</h1>
+    <label>State: </label>
+    <input type="text" placeholder="New York" id="State">
+
+    <label>City: </label>
+    <input type="text" placeholder="New York City" id="City">
+
+    
+
+    <button type="submit" id="submit">Submit</button>
+
+
+    <script type="module">
+        
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-analytics.js";
+    
+        const firebaseConfig = {
+          apiKey: "AIzaSyBFizCTjrxUhXX7dir_hcSsGfqBqJL-vXQ",
+          authDomain: "llm-project-be870.firebaseapp.com",
+          databaseURL: "https://llm-project-be870-default-rtdb.firebaseio.com",
+          projectId: "llm-project-be870",
+          storageBucket: "llm-project-be870.appspot.com",
+          messagingSenderId: "198283759188",
+          appId: "1:198283759188:web:065b9c788c3dc35fc3a7c1",
+          measurementId: "G-CTN0PW1EK6"
+        };
+      
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+
+        import {getDatabase, ref, child, get, set, update, remove} from "https://www.gstatic.com/firebasejs/10.14.0/firebase-database.js"
+
+        const db = getDatabase();
+        let state = document.getElementById('State');
+        let city = document.getElementById('City')
+        var locNum = 1;
+        let submit = document.getElementById("submit")
+        
+
+        function AddData(){
+            set(ref(db, 'Locations/' + 'Location ' + locNum),{
+                State: state.value, 
+                City: city.value
+            }).then(()=>{
+                alert("Data Added Successfully");
+            }).catch(()=>{
+                alert("Unsuccessful");
+                console.log(error);
+            })
+            if(locNum == 3){
+                locNum = 1;
+            }
+            else{
+                locNum++;
+            }
+            
+        }
+        
+        submit.addEventListener('click', AddData);
+
+      </script>
+</body>
+
+</html>
