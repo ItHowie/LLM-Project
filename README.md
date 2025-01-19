@@ -1,4 +1,4 @@
-##angleSliders
+#angleSliders
 
   This Unity script allows you to dynamically update a TextMeshPro UI element with a UI slider's value. It supports multiple parameters (theta, phi, alpha, beta, gamma) controlled by boolean flags/variables (e.g., phiIsOn,     thetaIsOn).
 
