@@ -1,8 +1,8 @@
-## angleSliders
+# angleSliders
 
   This Unity script allows you to dynamically update a TextMeshPro UI element with a UI slider's value. It supports multiple parameters (theta, phi, alpha, beta, gamma) controlled by boolean flags/variables (e.g., phiIsOn,     thetaIsOn).
 
-# Code Reference - Below is a line-by-line breakdown of the angleSliders script:
+## Code Reference - Below is a line-by-line breakdown of the angleSliders script:
 ```C#
   using System.Collections; // Includes the System.Collections namespace for handling collections.
   
@@ -42,7 +42,7 @@
   
   if (gammaIsOn) { mySliderText.text = (mySlider.value).ToString(); } // Updates the text if gammaIsOn is true.
 ```
-# Customization
+## Customization
 
   Add new parameters by creating additional boolean flags and extending the Update() method.
   
@@ -50,7 +50,7 @@
   
   Example Configuration
 
-# Scene Setup
+## Scene Setup
 
   Slider: Positioned in the center of the canvas.
   
