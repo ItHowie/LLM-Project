@@ -60,7 +60,7 @@
   
     phiIsOn: Checked (true).
     
-  All other flags: Unchecked (false).
+      All other flags: Unchecked (false).
   
   Expected Behavior
   
